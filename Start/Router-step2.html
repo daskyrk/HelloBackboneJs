@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Router-step2</title>
+</head>
+<body>
+<a href="#actions">#actions</a>
+<a href="#/actions">#/actions</a>
+<a href="#/posts/test/120">#/posts/test/120</a>
+</body>
+<script src="assets/js/jquery-1.11.2.min.js"></script>
+<script src="assets/js/underscore-min.js"></script>
+<script src="assets/js/backbone.js"></script>
+<script>
+    (function ($) {
+        /*刷新后默认还是上次的路径，即上次最后点的链接地址是#/posts/test/120的，那就调用getPost方法，
+        如果是#actions的，就调用defaultRoute方法，并且是自动加载调用的，暂时不知道原因*/
+        /*同一链接只能点击一次，然后失效，只能再点击其他链接来恢复，暂时不知道原因*/
+        var AppRouter = Backbone.Router.extend({
+            routes: {
+                "posts/:id":"getPost",//这样无法匹配，加了：表示：后的为方法的参数
+                "/posts/test/:id":"getPost",//这样无法匹配getPost方法，所以会匹配defaultRoute方法
+                "posts/test/:id":"getPost",//这样可以匹配,参数id为120
+                "*actions": "defaultRoute"//当匹配不到其他的时，才会匹配这个
+            },
+            getPost:function(id){
+                alert("getPost："+id);//结果为：120
+            },
+            defaultRoute: function (actions) {
+                alert("default："+actions);
+            }
+        });
+        var app_router = new AppRouter;
+        Backbone.history.start();//这两句都必须，否则不反应
+    })(jQuery);
+</script>
+
+</html>

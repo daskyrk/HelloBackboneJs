@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Collection-step3</title>
+</head>
+<body>
+
+</body>
+<script src="assets/js/jquery-1.11.2.min.js"></script>
+<script src="assets/js/underscore-min.js"></script>
+<script src="assets/js/backbone.js"></script>
+<script>
+    (function ($) {
+        Book = Backbone.Model.extend({
+            defaults: {
+                title: "default"
+            }
+        });
+        BookShelf = Backbone.Collection.extend({
+            model: Book
+        });
+        var book1 = new Book({title: "book1"});
+        var book2 = new Book({title: "book2"});
+        var book3 = new Book({title: "book3"});
+        var bookShelf = new BookShelf([book1, book2, book3]);
+//        或者使用add方式
+//        bookShelf.add(book1);
+//        bookShelf.add(book2);
+//        bookShelf.add(book3);
+        bookShelf.remove(book3);
+        //基于 underscore 这个 js 库，还可以使用 each 的方法获取 collection 中的数据
+        bookShelf.each(function (book) {
+            alert(book.get("title"));
+        });
+        /*collection 在 fetch 到数据之后，会调用reset 方法，所以你需要
+        在 collection 中定义 reset 方法或者是绑定 reset 方法。这里使用绑定演示：*/
+        bookShelf.bind('reset', showAllBooks);//绑定的步骤要在 fetch 之前进行
+        //使用 fetch 从服务器端获取数据,使用 reset 渲染
+        bookShelf.fetch({
+            url: '/getbooks/', success: function (collection, response) {
+                collection.each(function (book) {
+                    alert(book.get('title'));
+                });
+            }, error: function () {
+                alert('error');
+            }
+        });
+        showAllBooks = function () {
+            alert("show")
+            bookShelf.each(function (book) {
+                //将 book 数据渲染到页面。
+            });
+        }
+    })(jQuery);
+</script>
+
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Router-step3</title>
+</head>
+<body>
+<a href="#/posts/asd">#/posts/asd</a><br>
+<a href="#/download/user/images/hey.gif">#/download/user/images/hey.gif</a><br>
+<a href="#/dashboard/graph">#/dashboard/graph</a><br>
+<a href="#/test/actions">#/test/actions</a><br>
+<a href="#/actions">#/actions</a><br>
+<a href="#/test">#/test</a>
+</body>
+<script src="assets/js/jquery-1.11.2.min.js"></script>
+<script src="assets/js/underscore-min.js"></script>
+<script src="assets/js/backbone.js"></script>
+<script>
+    (function ($) {
+        /*刷新后默认还是上次的路径，即上次最后点的链接地址是#/posts/test/120的，那就调用getPost方法，
+         如果是#actions的，就调用defaultRoute方法，并且是自动加载调用的，暂时不知道原因*/
+        /*同一链接只能点击一次，然后失效，只能再点击其他链接来恢复，暂时不知道原因*/
+
+        /*匹配#标签之后内容的方法，有两种：一种是用“:”来把#后面的对应
+         的位置作为参数；还有一种是“*”，它可以匹配所有的 url*/
+        var AppRouter = Backbone.Router.extend({
+            routes: {
+                "posts/:id": "getPost",//这样无法匹配，加了：表示：后的为方法的参数
+                "/posts/test/:id": "getPost",//这样无法匹配getPost方法，所以会匹配defaultRoute方法
+                "posts/test/:id": "getPost",//这样可以匹配,参数id为120
+
+                //匹配了一个参数，path为hey.gif
+                "download/user/images/:path": "downloadFile",
+                //匹配了两个参数，route为dashboard，action为graph（第三个链接）；或者route匹配了test，action匹配了actions（第四个链接）
+                ":route/:action": "loadView",
+                //当匹配不到其他的时，才会匹配这个（第五、六个链接）
+                "*actions": "defaultRoute"
+//                "*": "defaultRoute"//不能这样，所有都不可用了
+            },
+            downloadFile: function (path) {
+                alert("path");
+                alert(path);//结果：hey.gif
+            },
+            loadView: function (route, action) {
+                alert("route_action");
+                alert(route + "_" + action);//结果：dashboard_graph（第三个链接）或test_actions（第四个链接）
+            },
+            getPost: function (id) {
+                alert("getPost");
+                alert(id);//结果：asd
+            },
+            defaultRoute: function (actions) {
+                alert("default");
+                alert(actions);//结果：actions或test（第五、六个链接）
+            }
+        });
+        var app_router = new AppRouter;
+        Backbone.history.start();
+    })(jQuery);
+</script>
+
+</html>
